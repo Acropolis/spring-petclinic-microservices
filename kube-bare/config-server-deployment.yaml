@@ -6,7 +6,7 @@ metadata:
     kompose.version: 1.14.0 ()
   creationTimestamp: null
   labels:
-    io.kompose.service: config-server
+    app: config-server
   name: config-server
 spec:
   replicas: 1
@@ -15,14 +15,25 @@ spec:
     metadata:
       creationTimestamp: null
       labels:
-        io.kompose.service: config-server
+        app: config-server
     spec:
       containers:
       - image: mszarlinski/spring-petclinic-config-server
         imagePullPolicy: Always
         name: config-server
         ports:
-        - containerPort: 8888
+        - name: http
+          containerPort: 8888
+        livenessProbe:
+          tcpSocket:
+            port: 8888
+          initialDelaySeconds: 30
+          periodSeconds: 20
+        readinessProbe:
+          tcpSocket:
+            port: 8888
+          initialDelaySeconds: 30
+          periodSeconds: 20
         resources:
           limits:
             memory: "268435456"
