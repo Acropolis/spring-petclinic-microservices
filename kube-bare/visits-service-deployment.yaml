@@ -2,11 +2,9 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   annotations:
-    kompose.cmd: kompose convert -f docker-compose.yml
-    kompose.version: 1.14.0 ()
   creationTimestamp: null
   labels:
-    io.kompose.service: visits-service
+    app: visits-service
   name: visits-service
 spec:
   replicas: 1
@@ -15,26 +13,29 @@ spec:
     metadata:
       creationTimestamp: null
       labels:
-        io.kompose.service: visits-service
+        app: visits-service
     spec:
       containers:
       - command:
-        - ./wait-for-it.sh
-        - discovery-server:8761
-        - --timeout=60
-        - --
         - java
-        - -XX:+UnlockExperimentalVMOptions
-        - -XX:+UseCGroupMemoryLimitForHeap
         - -Djava.security.egd=file:/dev/./urandom
         - -jar
         - /app.jar
         image: mszarlinski/spring-petclinic-visits-service
         name: visits-service
+        imagePullPolicy: Always
         ports:
-        - containerPort: 8082
-        resources:
-          limits:
-            memory: "268435456"
+        - name: http
+          containerPort: 8082
+        livenessProbe:
+          tcpSocket:
+            port: 8082
+          initialDelaySeconds: 5
+          periodSeconds: 20
+        readinessProbe:
+          tcpSocket:
+            port: 8082
+          initialDelaySeconds: 5
+          periodSeconds: 20
       restartPolicy: Always
 status: {}
