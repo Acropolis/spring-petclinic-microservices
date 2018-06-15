@@ -19,6 +19,7 @@ spec:
       - command:
         - java
         - -Djava.security.egd=file:/dev/./urandom
+        - -Deureka.instance.preferIpAddress=true
         - -jar
         - /app.jar
         image: mszarlinski/spring-petclinic-customers-service
