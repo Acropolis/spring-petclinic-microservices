@@ -21,20 +21,26 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}
+          command:
+          - java
+          - -Djava.security.egd=file:/dev/./urandom
+          - -Deureka.instance.preferIpAddress=true
+          - -jar
+          - /app.jar
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: 80
+              containerPort: 8082
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /
-              port: http
+              path: /health
+              port: 8082
           readinessProbe:
             httpGet:
-              path: /
-              port: http
+              path: /health
+              port: 8082
           resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- with .Values.nodeSelector }}
