@@ -1,40 +1,46 @@
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
-  name: {{ template "spring-petclinic.fullname" . }}
+  name: {{ template "admin-server.fullname" . }}
   labels:
-    app: {{ template "spring-petclinic.name" . }}
-    chart: {{ template "spring-petclinic.chart" . }}
+    app: {{ template "admin-server.name" . }}
+    chart: {{ template "admin-server.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ template "spring-petclinic.name" . }}
+      app: {{ template "admin-server.name" . }}
       release: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: {{ template "spring-petclinic.name" . }}
+        app: {{ template "admin-server.name" . }}
         release: {{ .Release.Name }}
     spec:
       containers:
         - name: {{ .Chart.Name }}
+          command:
+          - java
+          - -Djava.security.egd=file:/dev/./urandom
+          - -Deureka.instance.preferIpAddress=true
+          - -jar
+          - /app.jar
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: 80
+              containerPort: 9090
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /
-              port: http
+              path: /health
+              port: 9090
           readinessProbe:
             httpGet:
               path: /
-              port: http
+              port: 9090
           resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- with .Values.nodeSelector }}

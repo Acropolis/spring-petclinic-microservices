@@ -1,0 +1,6 @@
+dependencies:
+- name: config-server
+  repository: file://../config-server/
+  version: 0.1.0
+digest: sha256:2f6a4b535b068476694c259365c6267092cdb518133286b879acdc809e0981ce
+generated: 2018-06-15T15:50:33.436126325-07:00

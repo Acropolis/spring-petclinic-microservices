@@ -1,0 +1,4 @@
+dependencies:
+- name: config-server
+  version: "0.1.0"
+  repository: "file://../config-server/"
